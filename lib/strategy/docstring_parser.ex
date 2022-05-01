@@ -1,18 +1,19 @@
-defmodule ExGraphqls.MetaParser do
+defmodule ExGraphqls.DocstringParser do
     @type meta :: %{directives: [%{name: String.t(), args: %{}}], docstring: String.t()}
+    @behaviour ExGraphqls.Parser
 
-    def extract_meta(["@" <> rest | tokens], meta) do
-        #TODO:
-        nil
+    def handles?("\"" <> _), do: true
+    #TODO: handle annotations?
+    def handles?(_), do: false
+
+    def handle(context, tokens = [token | _]) do
+        extract_meta(tokens, context)
     end
 
-    def extract_meta(["\"" <> rest | tokens], meta) do
+    def extract_meta(["\"" <> rest | tokens], context = %{current_docstrings: docstrings}) do
         {remainder, docstring} = extract_docstring([rest|tokens])
-        extract_meta(remainder, Map.put(meta, :docstring, docstring))
-    end
-
-    def extract_meta(rest, meta) do
-        {rest, meta}
+        new_docstrings = docstrings ++ [docstring]
+        {%{context| current_docstrings: new_docstrings}, remainder}
     end
 
     defp extract_docstring(token_list) do
