@@ -11,11 +11,11 @@ defmodule ExGraphqlsTest do
       aField: String!
     }
     )
-    assert Graphqls.Parser.tokenise_text(text) == ["\"\n", "this", "is", "a", "multiline", "docstring.\n", "\"", "type", "AClass", "{", "aField:", "String!", "}"]
+    assert Graphqls.Tokenizer.tokenize(text) == ["\"\n", "this", "is", "a", "multiline", "docstring.\n", "\"", "type", "AClass", "{", "aField:", "String!", "}"]
   end
 
   test "checks meta correctly" do
     tokens = ["\"here", "it", "is", "man\"", "!"]
-    assert ExGraphqls.MetaParser.extract_meta(tokens, %{}) == :ok
+    assert ExGraphqls.MetaParser.extract_meta(tokens, %{}) == {["!"], %{docstring: "here it is man"}}
   end
 end

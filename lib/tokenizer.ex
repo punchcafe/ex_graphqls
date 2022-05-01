@@ -1,6 +1,6 @@
-defmodule Graphqls.Parser do
+defmodule Graphqls.Tokenizer do
 
-    def tokenise_text(body) do
+    def tokenize(body) do
         body
         |> String.split("\n")
         |> normalize_multiline_comments()
