@@ -5,8 +5,7 @@ defmodule Graphqls.Tokenizer do
     |> String.split("\n")
     |> normalize_multiline_comments()
     |> Enum.map(&strip_comments/1)
-    |> Enum.flat_map(&String.split(&1, " "))
-    |> Enum.reject(&(&1 == ""))
+    |> Enum.flat_map(&String.to_charlist/1)
   end
 
   defp strip_comments(line) do

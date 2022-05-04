@@ -12,21 +12,7 @@ defmodule ExGraphqlsTest do
     }
     )
 
-    assert Graphqls.Tokenizer.tokenize(text) == [
-             "\"\n",
-             "this",
-             "is",
-             "a",
-             "multiline",
-             "docstring.\n",
-             "\"",
-             "type",
-             "AClass",
-             "{",
-             "aField:",
-             "String!",
-             "}"
-           ]
+    assert Graphqls.Tokenizer.tokenize(text) == ~c(    "\n    this is a multiline docstring.\n    "    type AClass {      aField: String!    }    )
   end
 
   test "tokensises sda correctly" do
@@ -43,15 +29,8 @@ defmodule ExGraphqlsTest do
              {:ok,
               %{
                 current_annotiations: [],
-                current_docstrings: ["\n this is a multiline docstring.\n", "\n so is this.\n"],
+                current_docstrings: ["this is a multiline docstring.", "so is this."],
                 elements: []
               }}
-  end
-
-  test "checks meta correctly" do
-    tokens = ["\"here", "it", "is", "man\"", "!"]
-
-    assert ExGraphqls.MetaParser.extract_meta(tokens, %{}) ==
-             {["!"], %{docstring: "here it is man"}}
   end
 end

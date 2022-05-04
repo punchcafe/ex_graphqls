@@ -13,9 +13,14 @@ defmodule ExGraphqls.Parser do
 
   defp empty_context(), do: %{current_annotiations: [], current_docstrings: [], elements: []}
 
+  defp parse_recursive(context, [32| rest]) do
+    parse_recursive(context, rest)
+  end
+
   defp parse_recursive(context, tokens = [next_token | _]) do
     case Enum.find(@all_parsers, fn module -> module.handles?(next_token) end) do
       nil ->
+        IO.inspect("next token #{next_token}")
         {:error, :invalid_token}
 
       mod ->
