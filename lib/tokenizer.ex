@@ -4,6 +4,7 @@ defmodule Graphqls.Tokenizer do
     body
     |> String.split("\n")
     |> normalize_multiline_comments()
+    # TODO: |> dedup_whitespace()
     |> Enum.map(&strip_comments/1)
     |> Enum.flat_map(&String.to_charlist/1)
   end
@@ -27,6 +28,7 @@ defmodule Graphqls.Tokenizer do
   end
 
   defp normalize_multiline_comments([line | lines], acc, line_acc) do
+    # do with char lists instead
     IO.inspect("line: #{line}")
     IO.inspect("acc: #{acc}")
 

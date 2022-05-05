@@ -3,12 +3,18 @@ defmodule ExGraphqls.TypeParser do
   @type meta :: %{directives: [%{name: String.t(), args: %{}}], docstring: String.t()}
   @behaviour ExGraphqls.Parser
 
+  
   @type type_def :: {:type_def, interfaces :: [atom()], fields :: FieldParser.field_defs()}
 
-  def handles?("type"), do: true
+
+  @whitespace 32
+  def handles?([?t, ?y, ?p, ?e, 36 | _]), do: true
   def handles?(_), do: false
 
   def handle(context, tokens = ["type", name, "implements" | tokens]) do
+    #TODO:
+    # Acts as subset of main parser (rename to TokenParser or something), using subset of strategies.
+    # Ordered list of Docstring, Directive, Field Parser means that Field Parser can assume it's always dealing with a field?
   end
 
   def extract_body_tokens(["{" | tokens]) do
