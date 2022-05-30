@@ -7,15 +7,15 @@ defmodule ExGraphqls.FieldParserTest do
     test "parses field declaration" do
       declaration = "name: String! ids: [Integer!]" |> String.to_charlist()
 
-      assert {'ids: [Integer!]',
-              %{
+      assert {%{
                 context_stack: [
                   %{
                     declared_fields: [],
                     fields: [{:field, "name", %{name: "String", nullable?: false}}]
                   }
                 ]
-              }} =
+              },
+              'ids: [Integer!]'} =
                FieldParser.parse_field_declaration(declaration, %{
                  context_stack: [%{declared_fields: []}]
                })

@@ -3,8 +3,12 @@ defmodule ExGraphqls.FieldParser do
 
   alias Graphqls.Utility
 
-  @type field_type :: %{name: atom(), nullable?: boolean()}
-  @type field_def :: {:repeated, nullable? :: atom(), field_type()} | field_type()
+  @type type_spec :: %{
+          name: atom(),
+          nullable?: boolean(),
+          list: false | {true, :nullable} | {true, :non_nullable}
+        }
+  @type field_declaration :: %{name: atom(), type: type_def()}
 
   @behaviour ExGraphqls.Parser
 
@@ -13,32 +17,35 @@ defmodule ExGraphqls.FieldParser do
   @whitespace 32
   #### TODO
   def handles?(_) do
+    true
   end
-
-  def handles?(_), do: false
 
   def handle(context, tokens) do
-    # split by first and second instance of space. 
+    parse_field_declaration(tokens, context)
+    # TODO: # split by first and second instance of : so we can get the args out. 
   end
 
-  def parse_field_declaration(tokens, ctx = %{context_stack: [field_declaration | rest]}) do
+  def parse_field_declaration(tokens, ctx = %{context_stack: [field_block_context | rest]}) do
     {[field_name, field_type], tokens} = Utility.split_by_spaces(tokens, 2)
     [field_name, ""] = String.split(to_string(field_name), ":")
     field_type = parse_field_type(to_string(field_type))
     field_def = {:field, field_name, field_type}
     # TODO: check annotations 
-    field_declarations =
-      Map.update(field_declaration, :fields, [field_def], fn existing ->
+    field_block_context =
+      Map.update(field_block_context, :fields, [field_def], fn existing ->
         [field_def | existing]
       end)
 
-    {tokens, %{ctx | context_stack: [field_declarations | rest]}}
+    {%{ctx | context_stack: [field_block_context | rest]}, tokens}
   end
 
   def parse_field_type("[" <> type_string) do
     case String.reverse(type_string) do
-      "!]" <> rest -> {:repeated, false, rest |> String.reverse() |> parse_field_type()}
-      "]" <> rest -> {:repeated, true, rest |> String.reverse() |> parse_field_type()}
+      "!]" <> rest ->
+        rest |> String.reverse() |> parse_field_type() |> Map.put(:list, {true, :non_nullable})
+
+      "]" <> rest ->
+        rest |> String.reverse() |> parse_field_type() |> Map.put(:list, {true, :nullable})
     end
   end
 
