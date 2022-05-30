@@ -13,7 +13,7 @@ defmodule ExGraphqls.Parser do
 
   defp empty_context(), do: %{current_annotiations: [], current_docstrings: [], elements: []}
 
-  defp parse_recursive(context, [32| rest]) do
+  defp parse_recursive(context, [32 | rest]) do
     parse_recursive(context, rest)
   end
 

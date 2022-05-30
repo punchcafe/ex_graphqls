@@ -1,5 +1,5 @@
 defmodule Graphqls.Tokenizer do
- ## TODO: make note of pre-processing steps like replacing """ with "
+  ## TODO: make note of pre-processing steps like replacing """ with "
   def tokenize(body) do
     body
     |> String.split("\n")

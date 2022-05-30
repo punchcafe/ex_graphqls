@@ -1,6 +1,8 @@
 defmodule ExGraphqls.FieldParser do
   #### Field Parser methods to be extracted
 
+  alias Graphqls.Utility
+
   @type field_type :: %{name: atom(), nullable?: boolean()}
   @type field_def :: {:repeated, nullable? :: atom(), field_type()} | field_type()
 
@@ -8,25 +10,29 @@ defmodule ExGraphqls.FieldParser do
 
   @type type_def :: {:type_def, interfaces :: [atom()], fields :: FieldParser.field_defs()}
 
-alias Graphqls.Utility
-
   @whitespace 32
   #### TODO
   def handles?(_) do
   end
+
   def handles?(_), do: false
 
   def handle(context, tokens) do
     # split by first and second instance of space. 
-
   end
 
-  def parse_field_declaration(tokens, context) do
-      with {[field_name, field_type], tokens} <- Utility.split_by_spaces(tokens, 2) do
-          :ok
-      end
-      #TODO: implement rest
+  def parse_field_declaration(tokens, ctx = %{context_stack: [field_declaration | rest]}) do
+    {[field_name, field_type], tokens} = Utility.split_by_spaces(tokens, 2)
+    [field_name, ""] = String.split(to_string(field_name), ":")
+    field_type = parse_field_type(to_string(field_type))
+    field_def = {:field, field_name, field_type}
+    # TODO: check annotations 
+    field_declarations =
+      Map.update(field_declaration, :fields, [field_def], fn existing ->
+        [field_def | existing]
+      end)
 
+    {tokens, %{ctx | context_stack: [field_declarations | rest]}}
   end
 
   def parse_field_type("[" <> type_string) do

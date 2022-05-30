@@ -20,11 +20,11 @@ defmodule ExGraphqls.DocstringParser do
     extract_docstring(token_list, [])
   end
 
-  defp extract_docstring([?/, ?"| tail], acc) do
+  defp extract_docstring([?/, ?" | tail], acc) do
     extract_docstring(tail, [?" | acc])
   end
 
-  defp extract_docstring([@whitespace, @whitespace| tail], acc) do
+  defp extract_docstring([@whitespace, @whitespace | tail], acc) do
     extract_docstring([@whitespace | tail], acc)
   end
 
